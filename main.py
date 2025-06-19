@@ -66,8 +66,6 @@ def download_deals():
     
     deals_df = read_xlsx(zip_path)
     deals_ids = get_first_column_ids(zip_path)
-    assoc_df =  fetch_deal_contact_associations(deal_ids)
-    
     rename_xlsx(zip_path,"deals.xlsx")
 
 
@@ -78,6 +76,6 @@ if __name__ == "__main__":
         download_contacts()
         time.sleep(60)
         download_deals()
-
+        
     else:
         print('Error en la coneccion') 
