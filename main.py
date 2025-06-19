@@ -3,10 +3,9 @@ import uuid
 import pandas as pd
 from hubspot_api.connection import test_connection, HUBSPOT_PROPS_CONTACTS, HUBSPOT_PROPS_DEALS
 from hubspot_api.export_contacts import export_contacts, check_export_status, download_export
-from hubspot_api.associations import fetch_deal_contact_associations
 from requests.exceptions import HTTPError
 from file_utils.xlsx_utils import read_xlsx, get_first_column_ids
-from utils.io_utils import rename_xlsx
+from utils.io_utils import rename_xlsx, delete_all_xlsx
 
 def download_contacts():
     try:
@@ -75,13 +74,10 @@ def download_deals():
 
 if __name__ == "__main__":
     if test_connection():
-
-        #delete_all_xlsx()
-        #download_contacts()
-        #time.sleep(60)
-        #download_deals()
-        data_frame= read_xlsx(r"data\contacs.xlsx")
-        print(data_frame)
+        delete_all_xlsx()
+        download_contacts()
+        time.sleep(60)
+        download_deals()
 
     else:
         print('Error en la coneccion') 
