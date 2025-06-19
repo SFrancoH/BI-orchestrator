@@ -1,0 +1,22 @@
+# Variables de entorno (tokens, configuración local)
+.env
+.env.*
+settings/.env
+
+#  Archivos generados por Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+#  Archivos de datos generados por el script
+data/*.xlsx
+data/*.zipgit 
+
+# Configuración del editor
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+
