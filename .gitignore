@@ -11,7 +11,8 @@ __pycache__/
 
 #  Archivos de datos generados por el script
 data/*.xlsx
-data/*.zipgit 
+data/*.zipgit
+data/*.json
 
 # Configuración del editor
 .vscode/

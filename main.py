@@ -1,5 +1,6 @@
 import time
 import uuid
+import os
 import pandas as pd
 
 from datetime import date, timedelta
@@ -13,8 +14,8 @@ from hubspot_api.export_contacts import export_contacts, check_export_status, do
 from facebook_api.fb_connection import test_marketing_api,ad_account_ids
 from facebook_api.fb_extract_Insights import batch_download_insights
 
-from file_utils.xlsx_utils import read_xlsx, get_first_column_ids, save_xlsx_incremental
-from utils.io_utils import rename_xlsx, delete_all_xlsx
+from file_utils.xlsx_utils import read_xlsx, get_first_column_ids, save_xlsx_incremental,xlsx2json
+from utils.io_utils import rename_xlsx, delete_all_xlsx,clean_data_folder
 
 
 def download_contacts():
@@ -95,18 +96,50 @@ def calcular_rango_consulta():
     
     return dia_inicio, dia_final
 
-def extract_facebook_ads(ad_account_id):
+def extract_insgith_ads(ad_account_id,name_df):
     start_date, end_date = calcular_rango_consulta()
     df = batch_download_insights(ad_account_id, start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d"))
-    save_xlsx_incremental(df, "XmartFi.xlsx")
+    return df
+    #save_xlsx_incremental(df, name_df)
+
+def extract_facebook_ads():
+    all_dfs = []
+    file_names = ["cuentas"
+
+    ]
+
+    for account_id, file_name in zip(ad_account_ids, file_names):
+        df = extract_insgith_ads(account_id, file_name)
+        df["ad_account_id"] = account_id
+        all_dfs.append(df)
+
+    combined_df = pd.concat(all_dfs, ignore_index=True)
+
+    # Guardar JSON con fechas en formato ISO (legible, sin epoch numérico)
+    os.makedirs("data", exist_ok=True)
+    json_path = os.path.join("data", "all_ads_data.json")
+    combined_df.to_json(
+        json_path,
+        orient="records",
+        force_ascii=False,
+        indent=4,
+        date_format="iso",
+        date_unit="s"
+    )
+
+    print("✅ JSON guardado en:", json_path)
+
 
 if __name__ == "__main__":
     if test_connection() and test_marketing_api(ad_account_ids[0]):
-        #delete_all_xlsx()
-        #download_contacts()
-        #time.sleep(60)
-        #download_deals()
-        extract_facebook_ads(ad_account_ids[0])
+        clean_data_folder()
+        delete_all_xlsx()
+        download_contacts()
+        time.sleep(60)
+        download_deals()
+        xlsx2json()
+        extract_facebook_ads()
+        delete_all_xlsx()
         
     else:
         print('Error en la coneccion') 
